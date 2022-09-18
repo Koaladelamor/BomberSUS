@@ -157,7 +157,7 @@ int LoadMap() {
     }
 
     //FOREGROUND
-
+    std::getline(file, temp);
     std::getline(file, temp, ';');
     std::cout << temp << std::endl;
     if (temp != "FOREGROUND") {
@@ -253,16 +253,16 @@ int main()
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
-    const int bg_w = background_w;
-    const int bg_h = background_h;
-    Vector3 initialPos = { -5.5f, 0.0f, -4.5f };
+    Vector3 fg_initialPos = { -6.5f, 1.0f, -6.5f };
+    Vector3 initialPos = { -5.5f, 0.0f, -5.5f };
     Vector3 tempPos = initialPos;
-    Vector3** positions = new Vector3* [bg_h];
 
+    Vector3** positions = new Vector3* [background_h];
+    Vector3** fg_positions = new Vector3 * [foreground_h];
 
     for (size_t i = 0; i < background_h; i++)
     {
-        positions[i] = new Vector3[bg_w];
+        positions[i] = new Vector3[background_w];
         for (size_t j = 0; j < background_w; j++)
         {
             tempPos.x += 1.0f;
@@ -270,6 +270,19 @@ int main()
         }
         tempPos.z += 1.0f;
         tempPos.x = initialPos.x;
+    }
+
+    tempPos = fg_initialPos;
+    for (size_t i = 0; i < foreground_h; i++)
+    {
+        fg_positions[i] = new Vector3[foreground_w];
+        for (size_t j = 0; j < foreground_w; j++)
+        {
+            tempPos.x += 1.0f;
+            fg_positions[i][j] = tempPos;
+        }
+        tempPos.z += 1.0f;
+        tempPos.x = fg_initialPos.x;
     }
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -295,20 +308,41 @@ int main()
             {
                 for (size_t j = 0; j < background_w; j++)
                 {
-                    DrawCube(positions[i][j], 1.0f, 1.0f, 1.0f, RED);
-                    DrawCubeWires(positions[i][j], 1.01f, 1.01f, 1.01f, GREEN);
+                    DrawCube(positions[i][j], 1.0f, 1.0f, 1.0f, BROWN);
+                    DrawCubeWires(positions[i][j], 1.02f, 1.02f, 1.02f, DARKBROWN);
+                }
+            }
+
+            for (size_t i = 0; i < foreground_h; i++)
+            {
+                for (size_t j = 0; j < foreground_w; j++)
+                {
+                    if (foreground[i][j] == "L") { 
+                        DrawCube(fg_positions[i][j], 1.0f, 1.0f, 1.0f, BLACK);
+                        DrawCubeWires(fg_positions[i][j], 1.02f, 1.02f, 1.02f, DARKGRAY);
+                    }
+                    else if (foreground[i][j] == "P") { 
+                        DrawCube(fg_positions[i][j], 1.0f, 1.0f, 1.0f, LIGHTGRAY);
+                        DrawCubeWires(fg_positions[i][j], 1.02f, 1.02f, 1.02f, GRAY);
+                    }
+                    else if (foreground[i][j] == "T") {
+                        DrawCube(fg_positions[i][j], 1.0f, 1.0f, 1.0f, DARKGRAY);
+                        DrawCubeWires(fg_positions[i][j], 1.02f, 1.02f, 1.02f, BLACK);
+                    }
+                    //DrawCube(fg_positions[i][j], 1.0f, 1.0f, 1.0f, GREEN);
+                    //DrawCubeWires(fg_positions[i][j], 1.02f, 1.02f, 1.02f, DARKGREEN);
                 }
             }
                 
+                //DrawCube(fg_initialPos, 1.0f, 1.0f, 1.0f, GREEN);
                 //DrawCube(initialPos, 1.0f, 1.0f, 1.0f, RED);
-                //DrawCube(tempPos, 1.0f, 1.0f, 1.0f, RED);
                 //DrawCubeWires(cubePosition, 2.0f, 2.0f, 2.0f, MAROON);
 
-                DrawGrid(10, 1.0f);
+                //DrawGrid(10, 1.0f);
 
             EndMode3D();
 
-            DrawText("Welcome to the third dimension!", 10, 40, 20, DARKGRAY);
+            //DrawText("Welcome to the third dimension!", 10, 40, 20, DARKGRAY);
 
             DrawFPS(10, 10);
 
